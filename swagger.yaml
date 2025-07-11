@@ -1,0 +1,2026 @@
+openapi: 3.0.0
+info:
+  title: My API
+  version: 1.0.0
+  description: My REST API documentation
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://test-agent-platform-orchestrator.exprealty.com
+    description: Test server
+  - url: https://dev-agent-platform-orchestrator.exprealty.com
+    description: Development server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # Optional, can be used to indicate token format
+
+security:
+  - BearerAuth: [] # This applies Bearer token authentication globally
+
+paths:
+  # Health Check API
+  /health-check:
+    get:
+      summary: Health Check API
+      description: Returns the status of the API
+      responses:
+        "200":
+          description: Success
+
+  # Create Conversation
+  /user/createConversation:
+    post:
+      summary: Create Conversation
+      description: Create a new conversation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - coversationSummery
+              properties:
+                userId:
+                  type: string
+                  example: "6545645456545454"
+      responses:
+        "200":
+          description: Convesation Credated Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  coversationSummery:
+                    type: string
+                    example: "Conervsation Summery"
+        "400":
+          description: Invalid request parameters
+        "401":
+          description: Unauthorized - Bearer token missing or invalid
+        "500":
+          description: Internal Server Error
+
+  # Get All Converstion For User
+  /user/getAllConversation:
+    get:
+      summary: Get Conversations by User ID
+      description: Returns a list of conversations for a specific user.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to fetch conversations for.
+        - in: query
+          name: pageSize
+          schema:
+            type: number
+          required: true
+          description: The number of record for a page.
+        - in: query
+          name: pageNumber
+          schema:
+            type: number
+          required: true
+          description: Page Number.
+      responses:
+        "200":
+          description: A list of conversations for the specified user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uId:
+                      type: string
+                      example: "123e4567-e89b-12d3-a456-426614174000"
+                    userId:
+                      type: string
+                      example: "6545645456545454"
+                    createdOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-14T10:30:00Z"
+                    updatedOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-14T12:45:00Z"
+                    expireOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Missing or invalid user ID.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Delete A Converstion For User
+  /user/deleteConversation:
+    delete:
+      summary: Delete Conversations by Conversation ID
+      description: Delete The Convesation Using COnversation ID.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: conversationId
+          schema:
+            type: string
+          required: true
+          description: The ID of the conversations to delete conversation.
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to delete conversation for User.
+      responses:
+        "200":
+          description: A list of conversations for the specified user.
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: string
+                  example: "Conversation Deleted Successfully!"
+        "400":
+          description: Bad Request - Missing or invalid conversation ID.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+
+  # Create A Message For User Conversation
+  /user/createMessage:
+    post:
+      summary: Create Message by Conversation ID and UserID
+      description: Create The Message Using Conversation ID and userId.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - coversationId
+              properties:
+                userId:
+                  type: string
+                  example: "6545645456545454"
+                conversationId:
+                  type: string
+                  example: "4545554545464554"
+                messageType:
+                  type: string
+                  example: "text"
+                messageContent:
+                  type: string
+                  example: string
+                deviceType:
+                  type: string
+                  example: "Desktop"
+      responses:
+        "200":
+          description: New Message Created Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This is User query Response!"
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Update A Message For User Conversation
+  /user/updateMessage:
+    put:
+      summary: Update Message by  Message Id
+      description: Update The Message Using Message Id.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - uId
+                - conversationId
+                - messageContent
+                - deviceType
+              properties:
+                uId:
+                  type: string
+                  example: "6545645456545454"
+                conversationId:
+                  type: string
+                  example: "5658565656532356"
+                messageContent:
+                  type: string
+                  example: "Be Happy !"
+                deviceType:
+                  type: string
+                  example: "Desktop"
+      responses:
+        "200":
+          description: Message Updated Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This is User query Response!"
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+
+  # Get All Message For a Conversation
+  /user/fetchAllMessage:
+    get:
+      summary: Get All Message For a Conversation
+      description: Get All Message For a user conversation.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to get all message for a conversation.
+        - in: query
+          name: conversationId
+          schema:
+            type: string
+          required: true
+          description: The ID of the conversations to get all message for a conversation.
+        - in: query
+          name: pageSize
+          schema:
+            type: number
+          required: true
+          description: The page size to get all message for a conversation.
+        - in: query
+          name: pageNumber
+          schema:
+            type: number
+          required: true
+          description: The page number of the user to get all message for a conversation.
+      responses:
+        "200":
+          description: All Message for conversation Feteched Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This User query Response!"
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Get A Message For By Message Id and User Id
+  /user/fetchMessage:
+    get:
+      summary: Get A Message using messageId
+      description: Get a Message For a user conversation using Message Id.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: messageId
+          schema:
+            type: string
+          required: true
+          description: The ID of the message to get a message for a conversation.
+        - in: query
+          name: conversationId
+          schema:
+            type: string
+          required: true
+          description: The ID of the conversation to get a message for a conversation.
+      responses:
+        "200":
+          description: All Message for conversation Feteched Successfully!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uId:
+                      type: string
+                      example: "123e4567-e89b-12d3-a456-426614174000"
+                    userId:
+                      type: string
+                      example: "6545645456545454"
+                    createdOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-14T10:30:00Z"
+                    updatedOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-14T12:45:00Z"
+                    expireOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Delete A Message For User
+  /user/deleteMessage:
+    delete:
+      summary: Delete Message by Message ID
+      description: Delete The Message Using Message ID.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: conversationId
+          schema:
+            type: string
+          required: true
+          description: The ID of the conversation to delete a message.
+        - in: query
+          name: messageId
+          schema:
+            type: string
+          required: true
+          description: The ID of the message to delete a message.
+      responses:
+        "200":
+          description: Delete message for the specified Id.
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: string
+                  example: "Message Deleted Successfully!"
+        "400":
+          description: Bad Request - Missing or invalid conversation ID.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Create A Message For User Conversation
+  /user/createStreamMessage:
+    post:
+      summary: Create Stream Message by Conversation ID and UserID
+      description: Create The Stream Message Using Conversation ID and userId.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - coversationId
+                - messageContent
+                - deviceType
+                - messageType
+              properties:
+                userId:
+                  type: string
+                  example: "6545645456545454"
+                conversationId:
+                  type: string
+                  example: "4545554545464554"
+                messageType:
+                  type: string
+                  example: "text"
+                messageContent:
+                  type: string
+                  example: string
+                deviceType:
+                  type: string
+                  example: "Desktop"
+      responses:
+        "200":
+          description: New Message Created Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This is User query Response!"
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+
+  # Create A Feedback For User Conversation
+  /user/addFeedback:
+    post:
+      summary: Create Feeback by Message ID and UserID
+      description: Create A Feeback for Messgae Using Message ID and userId.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - messageId
+                - conversationId
+                - type
+              properties:
+                userId:
+                  type: string
+                  example: "6545645456545454"
+                messageId:
+                  type: string
+                  example: "4545554545464554"
+                conversationId:
+                  type: string
+                  example: "5658565656565656"
+                type:
+                  type: string
+                  example: "👍🏻/👎🏻"
+                deviceType:
+                  type: string
+                  example: "Desktop"
+      responses:
+        "200":
+          description: New Feedback Created Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feedbackId:
+                    type: string
+                    example: "898259566656"
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  type:
+                    type: string
+                    example: "👍🏻/👎🏻"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  status:
+                    type: string
+                    example: "Open"
+                  adminNotes:
+                    type: string
+                    example: "Initial feedback received"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This is User query Response!"
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+
+  # Update A Feedback For User Conversation
+  /user/updateFeedback:
+    put:
+      summary: Update Feedback by Message Id AND user Id
+      description: Update The Feedback Using Message Id AND user Id.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - messageId
+                - type
+                - deviceType
+              properties:
+                userId:
+                  type: string
+                  example: "6545645456545454"
+                messageId:
+                  type: string
+                  example: "44545412162326565"
+                type:
+                  type: string
+                  example: "👍🏻/👎🏻"
+                deviceType:
+                  type: string
+                  example: "Desktop"
+                status:
+                  type: string
+                  enum: ["Investigating", "Resolved", "Canceled"]
+                  example: "Investigating"
+                adminNotes:
+                  type: string
+                  example: "Admin notes about the feedback"
+      responses:
+        "200":
+          description: Feedback Updated Successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feedbackId:
+                    type: string
+                    example: "898259566656"
+                  type:
+                    type: string
+                    example: "👍🏻/👎🏻"
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  status:
+                    type: string
+                    example: "Investigating"
+                  adminNotes:
+                    type: string
+                    example: "Admin notes about the feedback"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This is User query Response!"
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Get A Feedback For Message
+  /user/fetchFeedback:
+    get:
+      summary: Get A Feedback using messageId and userId
+      description: Get a Feedback using messageId and userId Message For a user message.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: messageId
+          schema:
+            type: string
+          required: true
+          description: The ID of the message to get a message for a feedback.
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user and user to get a message for a feedback.
+      responses:
+        "200":
+          description: Feedback Feteched Successfully!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uId:
+                      type: string
+                      example: "123e4567-e89b-12d3-a456-426614174000"
+                    userId:
+                      type: string
+                      example: "6545645456545454"
+                    messageId:
+                      type: string
+                      example: "6521545454"
+                    type:
+                      type: string
+                      example: "👍🏻/👎🏻"
+                    status:
+                      type: string
+                      example: "Open"
+                    adminNotes:
+                      type: string
+                      example: "Admin notes about the feedback"
+                    userQuery:
+                      type: string
+                      example: "This is dummy user query!"
+                    queryResponse:
+                      type: string
+                      example: "This is dummy user query Response!"
+                    createdOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-14T10:30:00Z"
+                    updatedOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-14T12:45:00Z"
+                    expireOn:
+                      type: string
+                      format: date-time
+                      example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid Parameters.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Delete A Message For User
+  /user/deleteFeedback:
+    delete:
+      summary: Delete Feedback by Message ID and user ID
+      description: Delete The Feedback Using Message ID and User Id.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: messageId
+          schema:
+            type: string
+          required: true
+          description: The ID of the message and user to delete a feedback.
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to delete a feedback.
+      responses:
+        "200":
+          description: Delete Feedback for the specified Message.
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: string
+                  example: "Feedback Deleted Successfully!"
+        "400":
+          description: Bad Request - Missing or invalid conversation ID.
+        "401":
+          description: Unauthorized - Invalid token.
+        "500":
+          description: Internal Server Error.
+  # Get Login Details by User ID
+  /profile/loginDetails:
+    get:
+      summary: Get Login Details by User ID To Check User Data Loaded Or Not!
+      description: Retrieve the login profile details for a specific user based on their user ID.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user whose login details are to be fetched.
+      responses:
+        "200":
+          description: Successfully retrieved the user's login profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: "user-123"
+                  active:
+                    type: boolean
+                    example: true
+                  archived:
+                    type: boolean
+                    example: false
+        "400":
+          description: Bad Request - Missing or invalid user ID.
+        "401":
+          description: Unauthorized - Invalid token.
+        "404":
+          description: Not Found - No user found with the given ID.
+        "500":
+          description: Internal Server Error.
+  # Update Login Details
+  /profile/updateLoginDetails:
+    put:
+      summary: Update Login Details
+      description: Update the login profile details for a specific user using their user ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - isUserDataLoaded
+              properties:
+                userId:
+                  type: string
+                  description: The ID of the user whose details are being updated.
+                  example: "user-123"
+                isUserDataLoaded:
+                  type: boolean
+                  description: flag to check user data loaded or not!.
+                  example: false
+      responses:
+        "200":
+          description: Successfully updated the user's login profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User login details updated successfully."
+                  updatedFields:
+                    type: object
+                    example:
+                      archived: true
+        "400":
+          description: Bad Request - Missing or invalid user ID.
+        "401":
+          description: Unauthorized - Invalid token.
+        "404":
+          description: Not Found - No user found with the given ID.
+        "500":
+          description: Internal Server Error.
+
+  # Get User Announcements
+  /profile/announcements:
+    get:
+      summary: Get Announcements for User
+      description: Retrieve active announcements for a specific user, filtering based on display type and view history.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: The ID of the user to fetch announcements for
+          example: "user-123"
+      responses:
+        "200":
+          description: User announcements retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User announcements fetched successfully!"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uId:
+                          type: string
+                          example: "ann_123456789"
+                        title:
+                          type: string
+                          example: "System Maintenance"
+                        message:
+                          type: string
+                          example: "System will be under maintenance from 2 AM to 4 AM"
+                        displayType:
+                          type: string
+                          enum: [show_once_per_user, show_every_login]
+                          example: "show_once_per_user"
+                        type:
+                          type: string
+                          enum: [info, warning, error]
+                          example: "info"
+                        createdBy:
+                          type: string
+                          example: "admin_123"
+                        status:
+                          type: string
+                          enum: [active, inactive]
+                          example: "active"
+                        runIndefinitely:
+                          type: boolean
+                          example: false
+                        startDate:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T00:00:00Z"
+                        endDate:
+                          type: string
+                          format: date-time
+                          example: "2024-01-02T00:00:00Z"
+                        createdOn:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T10:30:00Z"
+                        updatedOn:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T15:45:00Z"
+                        expireAt:
+                          type: string
+                          format: date-time
+                          example: "2024-12-31T23:59:59Z"
+        "400":
+          description: Bad Request - Missing or invalid user ID
+        "401":
+          description: Unauthorized - Invalid token
+        "500":
+          description: Internal Server Error
+
+    put:
+      summary: Mark Announcement as Viewed by User
+      description: Mark a specific announcement as viewed by a user to track view history.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - announcementId
+              properties:
+                userId:
+                  type: string
+                  description: The ID of the user who viewed the announcement
+                  example: "user-123"
+                announcementId:
+                  type: string
+                  description: The ID of the announcement that was viewed
+                  example: "ann_123456789"
+                isViewed:
+                  type: boolean
+                  description: Flag indicating if the announcement was viewed (defaults to true)
+                  example: true
+      responses:
+        "200":
+          description: Announcement marked as viewed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Annoucement Mark As Viewed Successfully!"
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: "user-123"
+                      announcementId:
+                        type: string
+                        example: "ann_123456789"
+                      viewedAt:
+                        type: string
+                        format: date-time
+                        example: "2024-01-01T10:30:00Z"
+                      isViewed:
+                        type: boolean
+                        example: true
+        "400":
+          description: Bad Request - Missing required parameters
+        "401":
+          description: Unauthorized - Invalid token
+        "500":
+          description: Internal Server Error
+# Agent Response for Feedback
+  /user/feedback/agent-response:
+    post:
+      summary: Agent Response for Feedback
+      description: Submit agent response for feedback including comments, files, reasons, and safety flags.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - messageId
+                - userId
+              properties:
+                messageId:
+                  type: string
+                  description: The ID of the message associated with the feedback
+                  example: "52666666226884546"
+                userId:
+                  type: string
+                  description: The ID of the user who provided the feedback
+                  example: "6545645456545454"
+                comment:
+                  type: string
+                  description: Agent's comment on the feedback
+                  example: "Thank you for your feedback. We'll work on improving this."
+                unSafeFlag:
+                  type: boolean
+                  description: Flag to mark content as unsafe
+                  example: false
+                reasons:
+                  type: array
+                  items:
+                    type: string
+                    enum: ["incorrect_info", "not_addressed", "incomplete", "unclear", "unsafe"]
+                  description: Array of reasons for the feedback
+                  example: ["incorrect_info", "unsafe"]
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Files uploaded with the feedback response
+      responses:
+        "200":
+          description: Agent response saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Feedback Agent Response Saved Successfully!"
+                  feedbackId:
+                    type: string
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+                  messageId:
+                    type: string
+                    example: "52666666226884546"
+                  userId:
+                    type: string
+                    example: "6545645456545454"
+                  type:
+                    type: string
+                    example: "👍🏻"
+                  conversationId:
+                    type: string
+                    example: "4654654541316435"
+                  userQuery:
+                    type: string
+                    example: "This is user query!"
+                  queryResponse:
+                    type: string
+                    example: "This is User query Response!"
+                  comments:
+                    type: string
+                    example: "Thank you for your feedback. We'll work on improving this."
+                  files:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      ["https://s3.amazonaws.com/feedback-images/image1.jpg"]
+                  reasons:
+                    type: array
+                    items:
+                      type: string
+                      enum: ["incorrect_info", "not_addressed", "incomplete", "unclear", "unsafe"]
+                    example: ["incorrect_info", "unsafe"]
+                  flaggedAsUnsafe:
+                    type: boolean
+                    example: false
+                  createdOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T10:30:00Z"
+                  updatedOn:
+                    type: string
+                    format: date-time
+                    example: "2024-02-14T12:45:00Z"
+                  expireAt:
+                    type: string
+                    format: date-time
+                    example: "2024-02-28T10:30:00Z"
+        "400":
+          description: Bad Request - Missing required parameters
+        "401":
+          description: Unauthorized - Invalid token
+        "404":
+          description: Not Found - Feedback not found
+        "500":
+          description: Internal Server Error
+
+  # Get Feedback for Admin
+  /user/feedback:
+    get:
+      summary: Get Feedback for Admin Dashboard
+      description: Retrieve feedback data for admin dashboard with filtering and pagination options.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: false
+          description: The ID of the user to filter feedback by (optional)
+        - in: query
+          name: fromDate
+          schema:
+            type: string
+            format: date
+          required: false
+          description: Start date for filtering feedback (YYYY-MM-DD format)
+        - in: query
+          name: toDate
+          schema:
+            type: string
+            format: date
+          required: false
+          description: End date for filtering feedback (YYYY-MM-DD format)
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: ["👍🏻", "👎🏻"]
+          required: false
+          description: Filter by feedback type
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: ["Open", "Investigating", "Resolved", "Canceled"]
+          required: false
+          description: Filter by status of investigation!  
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+          required: true
+          description: Number of records per page
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+          required: true
+          description: Page number for pagination
+        - in: query
+          name: reasons
+          schema:
+            type: string
+          required: false
+          description: JSON array of reasons to filter by
+          example: '["Inaccurate information", "Poor response quality"]'
+      responses:
+        "200":
+          description: Feedback data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Feedback Fetched Successfully!"
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uId:
+                          type: string
+                          example: "123e4567-e89b-12d3-a456-426614174000"
+                        userId:
+                          type: string
+                          example: "6545645456545454"
+                        messageId:
+                          type: string
+                          example: "52666666226884546"
+                        type:
+                          type: string
+                          example: "👍🏻"
+                        conversationId:
+                          type: string
+                          example: "4654654541316435"
+                        userQuery:
+                          type: string
+                          example: "This is user query!"
+                        queryResponse:
+                          type: string
+                          example: "This is User query Response!"
+                        comments:
+                          type: string
+                          example: "Thank you for your feedback"
+                        files:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            [
+                              "https://s3.amazonaws.com/feedback-images/image1.jpg",
+                            ]
+                        reasons:
+                          type: array
+                          items:
+                            type: string
+                            enum: ["incorrect_info", "not_addressed", "incomplete", "unclear", "unsafe"]
+                          example: ["incorrect_info"]
+                        flaggedAsUnsafe:
+                          type: boolean
+                          example: false
+                        createdOn:
+                          type: string
+                          format: date-time
+                          example: "2024-02-14T10:30:00Z"
+                        updatedOn:
+                          type: string
+                          format: date-time
+                          example: "2024-02-14T12:45:00Z"
+                        expireAt:
+                          type: string
+                          format: date-time
+                          example: "2024-02-28T10:30:00Z"
+                  pagination:
+                    type: object
+                    properties:
+                      totalItems:
+                        type: integer
+                        example: 150
+                      totalPages:
+                        type: integer
+                        example: 15
+                      currentPage:
+                        type: integer
+                        example: 1
+                      pageSize:
+                        type: integer
+                        example: 10
+        "400":
+          description: Bad Request - Invalid parameters
+        "401":
+          description: Unauthorized - Invalid token
+        "500":
+          description: Internal Server Error
+
+  # Get Feedback Summary
+  /user/feedback/summary:
+    get:
+      summary: Get Feedback Summary Statistics
+      description: Retrieve summary statistics for feedback including total count, positive/negative counts, and satisfaction rate.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: false
+          description: The ID of the user to get summary for (optional - if not provided, returns overall summary)
+        - in: query
+          name: fromDate
+          schema:
+            type: string
+            format: date
+          required: false
+          description: Start date for filtering feedback (YYYY-MM-DD format)
+        - in: query
+          name: toDate
+          schema:
+            type: string
+            format: date
+          required: false
+          description: End date for filtering feedback (YYYY-MM-DD format)
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: ["👍🏻", "👎🏻"]
+          required: false
+          description: Filter by feedback type
+      responses:
+        "200":
+          description: Feedback summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Feedback Fetched Successfully!"
+                  totalCount:
+                    type: integer
+                    description: Total number of feedback responses
+                    example: 150
+                  positiveCount:
+                    type: integer
+                    description: Number of positive feedback responses (👍🏻)
+                    example: 120
+                  negativeCount:
+                    type: integer
+                    description: Number of negative feedback responses (👎🏻)
+                    example: 30
+                  satisfiedRate:
+                    type: number
+                    format: float
+                    description: Percentage of satisfied users (positive feedback / total feedback * 100)
+                    example: 80.0
+        "400":
+          description: Bad Request - Invalid parameters
+        "401":
+          description: Unauthorized - Invalid token
+        "500":
+          description: Internal Server Error
+
+  # Generate Presigned URL for Feedback Images
+  /user/feedback/generateImageUrl:
+    get:
+      summary: Generate Presigned URL for Feedback Images
+      description: Generate a presigned URL to access feedback images stored in S3 using the provided key.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: url
+          schema:
+            type: string
+          required: true
+          description: The S3 key of the image file to generate a presigned URL for
+          example: "http://bucket-name.s3.us-east-1.amazonaws.com/agent_feedback_response/image1.jpg_6545645456545454_1707926400"
+      responses:
+        "200":
+          description: Presigned URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    description: The presigned URL for accessing the image
+                    example: "https://s3.amazonaws.com/bucket-name/agent_feedback_response/image1.jpg_6545645456545454_1707926400?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=..."
+                  message:
+                    type: string
+                    example: "Url Generated Successfully!"
+                  statusCode:
+                    type: integer
+                    example: 200
+        "400":
+          description: Bad Request - Missing or invalid key parameter
+        "401":
+          description: Unauthorized - Invalid token
+        "404":
+          description: Not Found - Image file not found
+        "500":
+          description: Internal Server Error
+
+  # Get Feedback Graph Analysis
+  /user/feedback/graphAnalysis:
+    get:
+      summary: Get Feedback Graph Analysis Data
+      description: Retrieve feedback data for graph analysis and visualization purposes.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: false
+          description: The ID of the user to get graph analysis for (optional - if not provided, returns overall analysis)
+        - in: query
+          name: fromDate
+          schema:
+            type: string
+            format: date
+          required: false
+          description: Start date for filtering feedback (YYYY-MM-DD format)
+        - in: query
+          name: toDate
+          schema:
+            type: string
+            format: date
+          required: false
+          description: End date for filtering feedback (YYYY-MM-DD format)
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: ["👍🏻", "👎🏻"]
+          required: false
+          description: Filter by feedback type
+      responses:
+        "200":
+          description: Feedback graph analysis data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Feedback Fetched Successfully!"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          example: "2024-02-14"
+                        positiveCount:
+                          type: integer
+                          example: 15
+                        negativeCount:
+                          type: integer
+                          example: 3
+                        totalCount:
+                          type: integer
+                          example: 18
+                        satisfactionRate:
+                          type: number
+                          format: float
+                          example: 83.33
+                        feedbackDetails:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              uId:
+                                type: string
+                                example: "123e4567-e89b-12d3-a456-426614174000"
+                              userId:
+                                type: string
+                                example: "6545645456545454"
+                              messageId:
+                                type: string
+                                example: "52666666226884546"
+                              type:
+                                type: string
+                                example: "👍🏻"
+                              userQuery:
+                                type: string
+                                example: "This is user query!"
+                              queryResponse:
+                                type: string
+                                example: "This is User query Response!"
+                              createdOn:
+                                type: string
+                                format: date-time
+                                example: "2024-02-14T10:30:00Z"
+        "400":
+          description: Bad Request - Invalid parameters
+        "401":
+          description: Unauthorized - Invalid token
+        "500":
+          description: Internal Server Error
+  /admin/announcements:
+    post:
+      tags:
+        - Admin Announcements
+      summary: Create a new admin announcement
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, message, displayType, type, createdBy, status, runIndefinitely]
+              properties:
+                title:
+                  type: string
+                  example: "System Maintenance"
+                message:
+                  type: string
+                  example: "System will be under maintenance from 2 AM to 4 AM"
+                displayType:
+                  type: string
+                  enum: [show_once_per_user, show_every_login]
+                  example: "show_once_per_user"
+                type:
+                  type: string
+                  enum: [info, warning, error]
+                  example: "info"
+                createdBy:
+                  type: string
+                  example: "admin_123"
+                status:
+                  type: string
+                  enum: [active, inactive]
+                  example: "active"
+                runIndefinitely:
+                  type: boolean
+                  example: false
+                startDate:
+                  type: string
+                  format: date-time
+                  example: "2024-01-01T00:00:00Z"
+                endDate:
+                  type: string
+                  format: date-time
+                  example: "2024-01-02T00:00:00Z"
+      responses:
+        '201':
+          description: Announcement created successfully
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+
+    get:
+      tags:
+        - Admin Announcements
+      summary: Get announcement by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: uId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the announcement
+      responses:
+        '200':
+          description: Announcement fetched successfully
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '404':
+          description: Announcement not found
+        '500':
+          description: Internal server error
+
+    put:
+      tags:
+        - Admin Announcements
+      summary: Update announcement by ID
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [uId, title, message, displayType, type, createdBy, status, runIndefinitely]
+              properties:
+                uId:
+                  type: string
+                  example: "ann_123456789"
+                title:
+                  type: string
+                  example: "Updated System Maintenance"
+                message:
+                  type: string
+                  example: "System maintenance has been rescheduled"
+                displayType:
+                  type: string
+                  enum: [show_once_per_user, show_every_login]
+                  example: "show_every_login"
+                type:
+                  type: string
+                  enum: [info, warning, error]
+                  example: "warning"
+                createdBy:
+                  type: string
+                  example: "admin_123"
+                status:
+                  type: string
+                  enum: [active, inactive]
+                  example: "active"
+                runIndefinitely:
+                  type: boolean
+                  example: true
+                startDate:
+                  type: string
+                  format: date-time
+                  example: "2024-01-01T00:00:00Z"
+                endDate:
+                  type: string
+                  format: date-time
+                  example: "2024-01-02T00:00:00Z"
+      responses:
+        '200':
+          description: Announcement updated successfully
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '404':
+          description: Announcement not found
+        '500':
+          description: Internal server error
+
+    patch:
+      tags:
+        - Admin Announcements
+      summary: Deactivate announcement by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: uId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the announcement to deactivate
+      responses:
+        '200':
+          description: Announcement deactivated successfully
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '404':
+          description: Announcement not found
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        - Admin Announcements
+      summary: Delete announcement by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: uId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the announcement to delete
+      responses:
+        '200':
+          description: Announcement deleted successfully
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorized
+        '404':
+          description: Announcement not found
+        '500':
+          description: Internal server error
+
+  /admin/getAllAnnouncements:
+    get:
+      tags:
+        - Admin Announcements
+      summary: Get all announcements with pagination and filtering
+      description: Retrieve all announcements with optional filtering by date range and status, with pagination support.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Number of announcements per page
+          example: 10
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Page number for pagination
+          example: 1
+        - name: fromDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Start date for filtering announcements (YYYY-MM-DD format). Defaults to 3 months ago if not provided.
+          example: "2024-01-01"
+        - name: toDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: End date for filtering announcements (YYYY-MM-DD format). Defaults to current date if not provided.
+          example: "2024-12-31"
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [active, inactive]
+          description: Filter by announcement status. If not provided, returns both active and inactive announcements.
+          example: "active"
+      responses:
+        '200':
+          description: Announcements retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Announcements Fetched Successfully!"
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uId:
+                          type: string
+                          example: "ann_123456789"
+                        title:
+                          type: string
+                          example: "System Maintenance"
+                        message:
+                          type: string
+                          example: "System will be under maintenance from 2 AM to 4 AM"
+                        displayType:
+                          type: string
+                          enum: [show_once_per_user, show_every_login]
+                          example: "show_once_per_user"
+                        type:
+                          type: string
+                          enum: [info, warning, error]
+                          example: "info"
+                        createdBy:
+                          type: string
+                          example: "admin_123"
+                        status:
+                          type: string
+                          enum: [active, inactive]
+                          example: "active"
+                        runIndefinitely:
+                          type: boolean
+                          example: false
+                        startDate:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T00:00:00Z"
+                        endDate:
+                          type: string
+                          format: date-time
+                          example: "2024-01-02T00:00:00Z"
+                        createdOn:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T10:30:00Z"
+                        updatedOn:
+                          type: string
+                          format: date-time
+                          example: "2024-01-01T15:45:00Z"
+                        expireAt:
+                          type: string
+                          format: date-time
+                          example: "2024-12-31T23:59:59Z"
+                  pagination:
+                    type: object
+                    properties:
+                      totalItems:
+                        type: integer
+                        example: 150
+                      totalPages:
+                        type: integer
+                        example: 15
+                      currentPage:
+                        type: integer
+                        example: 1
+                      pageSize:
+                        type: integer
+                        example: 10
+        '400':
+          description: Bad Request - Invalid parameters (e.g., invalid date range, missing required parameters)
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
+
+  /admin/metricsUtilizationTrends:
+    get:
+      tags:
+        - Admin Metrics
+      summary: Get metrics utilization trends with pagination
+      description: Retrieve message utilization trends with optional filtering by date range, with pagination support for analyzing platform usage patterns.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Number of messages per page
+          example: 10
+        - name: pageNumber
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Page number for pagination
+          example: 1
+        - name: fromDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Start date for filtering messages (YYYY-MM-DD format). Defaults to 3 months ago if not provided.
+          example: "2024-01-01"
+        - name: toDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: End date for filtering messages (YYYY-MM-DD format). Defaults to current date if not provided.
+          example: "2024-12-31"
+      responses:
+        '200':
+          description: Metrics utilization trends retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "All Messages Fecthed Successfully!"
+                  statusCode:
+                    type: integer
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            version:
+                              type: integer
+                              example: 1
+                            updatedOn:
+                              type: string
+                              format: date-time
+                              example: "2025-06-20T10:17:23.897Z"
+                            dType:
+                              type: string
+                              example: "message"
+                            customFields:
+                              type: array
+                              items:
+                                type: object
+                              example: []
+                            deviceType:
+                              type: string
+                              example: "desktop"
+                            messageType:
+                              type: string
+                              example: "text"
+                            conversationId:
+                              type: string
+                              example: "646761354648676468764867346877"
+                            uId:
+                              type: string
+                              example: "8356743467646876876967687687"
+                            sql_query:
+                              type: string
+                              example: "SELECT deeplink, teamsides FROM myteamrequalification WHERE id = '42ae72d6-050b-11eb-95a1-6f83ba3ae821'"
+                            deepLink:
+                              type: string
+                              example: "6"
+                            expireAt:
+                              type: string
+                              format: date-time
+                              example: "2025-07-20T10:17:23.897Z"
+                            active:
+                              type: boolean
+                              example: true
+                            archived:
+                              type: boolean
+                              example: false
+                            createdOn:
+                              type: string
+                              format: date-time
+                              example: "2025-06-20T10:17:23.897Z"
+                            userId:
+                              type: string
+                              example: "44545458784527648576875877"
+                            table_used:
+                              type: string
+                              example: "myteamrequalification"
+                            response:
+                              type: string
+                              example: "Your team has sold a total of 329 units."
+                            messageContent:
+                              type: string
+                              example: "how many units have my teams sold"
+                            id:
+                              type: string
+                              example: "545454545758485764558768786"
+                      hasNextPage:
+                        type: boolean
+                        example: true
+                      currentPage:
+                        type: integer
+                        example: 1
+        '400':
+          description: Bad Request - Invalid parameters (e.g., invalid date range, missing required parameters)
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal Server Error
