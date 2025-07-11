@@ -85,7 +85,14 @@ class UserService implements IUserService {
                 { $set: { status: 'Attended' } }
             );
 
-            return await generateSuccessResponse(null, 'User status updated to Attended');
+            return await generateSuccessResponse(
+                {
+                    employeeName: `${user.firstName} ${user.lastName}`,
+                    employeeId: user.empId,
+                    scanTime: new Date().toISOString(), // or actual scan time if available
+                },
+                'User status updated to Attended'
+            );
         } catch (error: any) {
             if (error.statusCode === 404) {
                 return await generateErrorResponse(404, error.message);
